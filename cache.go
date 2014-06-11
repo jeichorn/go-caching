@@ -3,40 +3,27 @@
 package caching
 
 import (
+	"bitbucket.org/landjur-golang/tasking"
 	"fmt"
 	"reflect"
 	"strings"
 	"time"
 )
 
-// NewCache returns a new instance of Cache.
-func NewCache(container Container, scavengingFrequency time.Duration) *Cache {
-	cache := &Cache{
-		container:           container,
-		scavengingFrequency: scavengingFrequency,
-	}
-
-	cache.scavengingTimer = time.AfterFunc(cache.scavengingFrequency, func() { cache.scavenging() })
-
-	return cache
+// cacheScavengingTask represents a task for scavenging expired tasks.
+type cacheScavengingTask struct {
+	Container Container
 }
 
-// Cache represents a cache manager object.
-type Cache struct {
-	container           Container
-	scavengingTimer     *time.Timer
-	scavengingFrequency time.Duration
-}
-
-// scavenging is the callback function for scavenging cache items.
-func (this Cache) scavenging() {
+// Execute implements tasking.Task interface.
+func (this cacheScavengingTask) Execute() {
 	// 1. sweep expired items
-	items := this.container.Items()
+	items := this.Container.Items()
 
 	var itemsNotExpired Items
 	for _, item := range items {
 		if item.HasExpired() {
-			this.Remove(item.Key)
+			this.Container.Remove(item.Key)
 		} else {
 			itemsNotExpired = append(itemsNotExpired, item)
 		}
@@ -44,19 +31,32 @@ func (this Cache) scavenging() {
 
 	// 2. sweep scavengable items
 	count := len(itemsNotExpired)
-	if count > this.container.Capacity() {
+	if count > this.Container.Capacity() {
 		// Sort the items
 		itemsNotExpired.Sort()
-		numberToSweep := count - this.container.Capacity()
+		numberToSweep := count - this.Container.Capacity()
 		for i := 0; i < numberToSweep; i++ {
-			this.Remove(itemsNotExpired[i].Key)
+			this.Container.Remove(itemsNotExpired[i].Key)
 		}
 	}
+}
 
-	// reset scavenging timer
-	if ok := this.scavengingTimer.Reset(this.scavengingFrequency); !ok {
-		this.scavengingTimer = time.AfterFunc(this.scavengingFrequency, func() { this.scavenging() })
+// NewCache returns a new instance of Cache.
+func NewCache(container Container, scavengingFrequency time.Duration) *Cache {
+	cache := &Cache{
+		container:           container,
+		scavengingScheduler: tasking.NewScheduler(scavengingFrequency, &cacheScavengingTask{container}),
 	}
+
+	cache.scavengingScheduler.Start()
+
+	return cache
+}
+
+// Cache represents a cache manager object.
+type Cache struct {
+	container           Container
+	scavengingScheduler *tasking.Scheduler
 }
 
 // Capacity returns the capacity of cache container.
