@@ -19,15 +19,15 @@ func New(capacity int) *InMemory {
 // InMemory represents the caching container stores items in-memory.
 // InMemory implements caching.Container.
 type InMemory struct {
-	locker   sync.Mutex
+	locker   sync.RWMutex
 	capacity int
 	items    map[string]*caching.Item
 }
 
 // Items returns the items cached.
 func (this InMemory) Items() caching.Items {
-	this.locker.Lock()
-	defer this.locker.Unlock()
+	this.locker.RLock()
+	defer this.locker.RUnlock()
 
 	items := make(caching.Items, len(this.items))
 	index := 0
@@ -53,8 +53,8 @@ func (this InMemory) Contains(key string) bool {
 }
 
 func (this InMemory) Get(key string) (interface{}, error) {
-	this.locker.Lock()
-	defer this.locker.Unlock()
+	this.locker.RLock()
+	defer this.locker.RUnlock()
 
 	if item, ok := this.items[key]; ok {
 		item.LastAccessedTime = time.Now()
