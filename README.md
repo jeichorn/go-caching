@@ -1,11 +1,17 @@
-#Golang Caching Component
+Golang Caching Package
+======================
 
-##Overview
+The package providers a scalable caching component.
 
-Caching is a scalable caching component.
-
-##Expansibility
+Expansibility
+=============
 
 1. container: the container for storage cache items.
 
+    * in-memory
+
 2. dependency: the expiration policy of cache items.
+
+    * absolute time
+    * sliding time
+    * file

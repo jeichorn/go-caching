@@ -1,10 +1,8 @@
-// Copyright 2014 Landjur. All rights reserved.
-
 package caching
 
 import (
-	"bitbucket.org/landjur-golang/tasking"
 	"fmt"
+	"github.com/landjur/go-tasking"
 	"reflect"
 	"strings"
 	"time"

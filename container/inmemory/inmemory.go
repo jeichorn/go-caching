@@ -1,9 +1,7 @@
-// Copyright 2014 Landjur. All rights reserved.
-
 package inmemory
 
 import (
-	"bitbucket.org/landjur-golang/caching"
+	"github.com/landjur/go-caching"
 	"sync"
 	"time"
 )
