@@ -15,3 +15,8 @@ Expansibility
     * absolute time
     * sliding time
     * file
+
+COPYRIGHT & LICENSE
+=====================
+
+Copyright 2014 Landjur, Inc. Code released under the Apache License, Version 2.0.
