@@ -9,6 +9,7 @@ import (
 
 // register the type for gob encoding.
 func init() {
+	gob.Register(time.Time{})
 	gob.Register(&file{})
 }
 
