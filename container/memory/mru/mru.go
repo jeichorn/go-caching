@@ -1,18 +1,16 @@
 package mru
 
 import (
-	"container/list"
-	"github.com/landjur/go-caching/container"
+	c "github.com/landjur/go-caching/container"
 	"github.com/landjur/go-caching/container/memory"
 )
 
 // New returns a new in-memory caching container using mru (most recently used) arithmetic.
 // It is not safe for concurrent access.
-func New(capacity int) container.Container {
+func New(capacity int) c.Container {
 	return &mru{
-		capacity: capacity,
-		list:     list.New(),
-		table:    make(map[string]*list.Element),
+		container: newContainer(),
+		Capacity:  capacity,
 	}
 }
 
@@ -21,78 +19,49 @@ func init() {
 	memory.MRU.Register(New)
 }
 
-// item represents a caching item.
-type item struct {
-	Key   string
-	Value interface{}
-}
-
 type mru struct {
-	capacity int
-	list     *list.List
-	table    map[string]*list.Element
+	container *container
+	Capacity  int
 }
 
 func (this *mru) Get(key string) (interface{}, error) {
-	if this.list == nil {
+	if this.container == nil {
 		return nil, nil
 	}
 
-	if element, ok := this.table[key]; ok {
-		this.list.MoveToFront(element)
-		return element.Value.(*item).Value, nil
-	}
-
-	return nil, nil
+	return this.container.Get(key), nil
 }
 
 func (this *mru) Set(key string, value interface{}) error {
-	if this.list == nil {
-		this.list = list.New()
-		this.table = make(map[string]*list.Element)
+	if this.container == nil {
+		this.container = newContainer()
 	}
 
-	if element, ok := this.table[key]; ok {
-		this.list.MoveToFront(element)
-		element.Value.(*item).Value = value
-	} else {
-		if this.capacity > 0 && this.list.Len() == this.capacity {
-			element := this.list.Front()
-			item := element.Value.(*item)
-			this.list.Remove(element)
-			delete(this.table, item.Key)
-		}
-
-		item := &item{
-			Key:   key,
-			Value: value,
-		}
-		element := this.list.PushFront(item)
-		this.table[key] = element
+	if this.Capacity > 0 && this.container.Count() == this.Capacity && !this.container.Contains(key) {
+		this.container.Discard()
 	}
+
+	this.container.Set(key, value)
 
 	return nil
 }
 
 func (this *mru) Remove(key string) error {
-	if this.list == nil {
+	if this.container == nil {
 		return nil
 	}
 
-	if element, ok := this.table[key]; ok {
-		this.list.Remove(element)
-		delete(this.table, key)
-	}
+	this.container.Remove(key)
 
 	return nil
 }
 
 func (this *mru) Clear() error {
-	if this.list == nil {
+	if this.container == nil {
 		return nil
 	}
 
-	this.list.Init()
-	this.table = make(map[string]*list.Element)
+	this.container.Clear()
+
 	return nil
 }

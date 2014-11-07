@@ -1,4 +1,4 @@
-package fifo
+package mru
 
 import (
 	"container/list"
@@ -36,6 +36,7 @@ func (this container) Get(key string) interface{} {
 	}
 
 	if element, ok := this.Map[key]; ok {
+		this.List.MoveToFront(element)
 		return element.Value.(*entry).Value
 	}
 
@@ -49,9 +50,10 @@ func (this *container) Set(key string, value interface{}) {
 	}
 
 	if element, ok := this.Map[key]; ok {
+		this.List.MoveToFront(element)
 		element.Value.(*entry).Value = value
 	} else {
-		element := this.List.PushBack(&entry{Key: key, Value: value})
+		element := this.List.PushFront(&entry{Key: key, Value: value})
 		this.Map[key] = element
 	}
 }

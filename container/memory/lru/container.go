@@ -79,6 +79,8 @@ func (this *container) Remove(key string) {
 }
 
 func (this *container) Clear() {
-	this.List.Init()
-	this.Map = make(map[string]*list.Element)
+	if this.List != nil {
+		this.List.Init()
+		this.Map = make(map[string]*list.Element)
+	}
 }
