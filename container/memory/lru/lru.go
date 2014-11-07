@@ -1,66 +1,66 @@
 package lru
 
 import (
-	c "github.com/landjur/go-caching/container"
+	"github.com/landjur/go-caching/container"
 	"github.com/landjur/go-caching/container/memory"
 )
 
-// New returns a new in-memory caching container using LRU (least recently used) arithmetic.
-func New(capacity int) c.Container {
+// New returns a new in-memory caching items using LRU (least recently used) arithmetic.
+func New(capacity int) container.Container {
 	return &lru{
-		container: newContainer(),
-		Capacity:  capacity,
+		capacity: capacity,
+		items:    newItems(),
 	}
 }
 
-// register the container.
+// register the items.
 func init() {
 	memory.LRU.Register(New)
 }
 
 type lru struct {
-	container *container
-	Capacity  int
+	capacity int
+	items    *items
 }
 
 func (this *lru) Get(key string) (interface{}, error) {
-	if this.container == nil {
+	if this.items == nil {
 		return nil, nil
 	}
 
-	return this.container.Get(key), nil
+	return this.items.Get(key), nil
 }
 
 func (this *lru) Set(key string, value interface{}) error {
-	if this.container == nil {
-		this.container = newContainer()
+	if this.items == nil {
+		this.items = newItems()
 	}
 
-	if this.Capacity > 0 && this.container.Count() == this.Capacity && !this.container.Contains(key) {
-		this.container.Discard()
+	if this.capacity > 0 && this.items.Count() == this.capacity && !this.items.Contains(key) {
+		this.items.Discard()
 	}
 
-	this.container.Set(key, value)
+	this.items.Set(key, value)
 
 	return nil
 }
 
 func (this *lru) Remove(key string) error {
-	if this.container == nil {
+	if this.items == nil {
 		return nil
 	}
 
-	this.container.Remove(key)
+	this.items.Remove(key)
 
 	return nil
 }
 
 func (this *lru) Clear() error {
-	if this.container == nil {
+	if this.items == nil {
 		return nil
 	}
 
-	this.container.Clear()
+	this.items.Clear()
 
 	return nil
 }
