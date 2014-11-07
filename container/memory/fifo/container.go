@@ -9,28 +9,28 @@ type entry struct {
 	Value interface{}
 }
 
-func newData() *data {
-	return &data{
+func newContainer() *container {
+	return &container{
 		List: list.New(),
 		Map:  make(map[string]*list.Element),
 	}
 }
 
-type data struct {
+type container struct {
 	List *list.List
 	Map  map[string]*list.Element
 }
 
-func (this data) Count() int {
+func (this container) Count() int {
 	return this.List.Len()
 }
 
-func (this data) Contains(key string) bool {
+func (this container) Contains(key string) bool {
 	_, ok := this.Map[key]
 	return ok
 }
 
-func (this data) Get(key string) interface{} {
+func (this container) Get(key string) interface{} {
 	if this.List == nil {
 		return nil
 	}
@@ -42,7 +42,7 @@ func (this data) Get(key string) interface{} {
 	return nil
 }
 
-func (this *data) Set(key string, value interface{}) {
+func (this *container) Set(key string, value interface{}) {
 	if this.List == nil {
 		this.List = list.New()
 		this.Map = make(map[string]*list.Element)
@@ -56,7 +56,7 @@ func (this *data) Set(key string, value interface{}) {
 	}
 }
 
-func (this *data) Discard() (string, interface{}) {
+func (this *container) Discard() (string, interface{}) {
 	element := this.List.Front()
 	if element == nil {
 		return "", nil
@@ -69,14 +69,14 @@ func (this *data) Discard() (string, interface{}) {
 	return entry.Key, entry.Value
 }
 
-func (this *data) Remove(key string) {
+func (this *container) Remove(key string) {
 	if element, ok := this.Map[key]; ok {
 		this.List.Remove(element)
 		delete(this.Map, key)
 	}
 }
 
-func (this *data) Clear() {
+func (this *container) Clear() {
 	this.List.Init()
 	this.Map = make(map[string]*list.Element)
 }

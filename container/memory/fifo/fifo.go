@@ -1,15 +1,15 @@
 package fifo
 
 import (
-	"github.com/landjur/go-caching/container"
+	c "github.com/landjur/go-caching/container"
 	"github.com/landjur/go-caching/container/memory"
 )
 
 // New returns a new in-memory caching container using fifo (first in first out) arithmetic.
-func New(capacity int) container.Container {
+func New(capacity int) c.Container {
 	return &fifo{
-		Capacity: capacity,
-		Data:     newData(),
+		container: newContainer(),
+		Capacity:  capacity,
 	}
 }
 
@@ -19,48 +19,48 @@ func init() {
 }
 
 type fifo struct {
-	Capacity int
-	Data     *data
+	container *container
+	Capacity  int
 }
 
 func (this *fifo) Get(key string) (interface{}, error) {
-	if this.Data == nil {
+	if this.container == nil {
 		return nil, nil
 	}
 
-	return this.Data.Get(key), nil
+	return this.container.Get(key), nil
 }
 
 func (this *fifo) Set(key string, value interface{}) error {
-	if this.Data == nil {
-		this.Data = newData()
+	if this.container == nil {
+		this.container = newContainer()
 	}
 
-	if this.Capacity > 0 && this.Data.Count() == this.Capacity && !this.Data.Contains(key) {
-		this.Data.Discard()
+	if this.Capacity > 0 && this.container.Count() == this.Capacity && !this.container.Contains(key) {
+		this.container.Discard()
 	}
 
-	this.Data.Set(key, value)
+	this.container.Set(key, value)
 
 	return nil
 }
 
 func (this *fifo) Remove(key string) error {
-	if this.Data == nil {
+	if this.container == nil {
 		return nil
 	}
 
-	this.Data.Remove(key)
+	this.container.Remove(key)
 
 	return nil
 }
 
 func (this *fifo) Clear() error {
-	if this.Data == nil {
+	if this.container == nil {
 		return nil
 	}
 
-	this.Data.Clear()
+	this.container.Clear()
 
 	return nil
 }
