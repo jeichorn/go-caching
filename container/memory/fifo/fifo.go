@@ -1,7 +1,6 @@
 package fifo
 
 import (
-	"container/list"
 	"github.com/landjur/go-caching/container"
 	"github.com/landjur/go-caching/container/memory"
 )
@@ -9,9 +8,8 @@ import (
 // New returns a new in-memory caching container using fifo (first in first out) arithmetic.
 func New(capacity int) container.Container {
 	return &fifo{
-		capacity: capacity,
-		list:     list.New(),
-		table:    make(map[string]*list.Element),
+		Capacity: capacity,
+		Data:     newData(),
 	}
 }
 
@@ -20,75 +18,49 @@ func init() {
 	memory.FIFO.Register(New)
 }
 
-type item struct {
-	Key   string
-	Value interface{}
-}
-
 type fifo struct {
-	capacity int
-	list     *list.List
-	table    map[string]*list.Element
+	Capacity int
+	Data     *data
 }
 
 func (this *fifo) Get(key string) (interface{}, error) {
-	if this.list == nil {
+	if this.Data == nil {
 		return nil, nil
 	}
 
-	if element, ok := this.table[key]; ok {
-		return element.Value.(*item).Value, nil
-	}
-
-	return nil, nil
+	return this.Data.Get(key), nil
 }
 
 func (this *fifo) Set(key string, value interface{}) error {
-	if this.list == nil {
-		this.list = list.New()
-		this.table = make(map[string]*list.Element)
+	if this.Data == nil {
+		this.Data = newData()
 	}
 
-	if element, ok := this.table[key]; ok {
-		element.Value.(*item).Value = value
-	} else {
-		if this.capacity > 0 && this.list.Len() == this.capacity {
-			element := this.list.Front()
-			item := element.Value.(*item)
-			this.list.Remove(element)
-			delete(this.table, item.Key)
-		}
-
-		item := &item{
-			Key:   key,
-			Value: value,
-		}
-		element := this.list.PushBack(item)
-		this.table[key] = element
+	if this.Capacity > 0 && this.Data.Count() == this.Capacity && !this.Data.Contains(key) {
+		this.Data.Discard()
 	}
+
+	this.Data.Set(key, value)
 
 	return nil
 }
 
 func (this *fifo) Remove(key string) error {
-	if this.list == nil {
+	if this.Data == nil {
 		return nil
 	}
 
-	if element, ok := this.table[key]; ok {
-		this.list.Remove(element)
-		delete(this.table, key)
-	}
+	this.Data.Remove(key)
 
 	return nil
 }
 
 func (this *fifo) Clear() error {
-	if this.list == nil {
+	if this.Data == nil {
 		return nil
 	}
 
-	this.list.Init()
-	this.table = make(map[string]*list.Element)
+	this.Data.Clear()
+
 	return nil
 }
