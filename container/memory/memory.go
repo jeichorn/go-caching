@@ -16,6 +16,7 @@ const (
 	LFU                            // imports github.com/landjur/go-caching/container/memory/lfu
 	LRU                            // imports github.com/landjur/go-caching/container/memory/lru
 	MRU                            // imports github.com/landjur/go-caching/container/memory/mru
+	ARC                            // imports github.com/landjur/go-caching/container/memory/arc
 	maxImplementation
 )
 

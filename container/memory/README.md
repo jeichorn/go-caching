@@ -8,3 +8,4 @@ The memory containers(not safe for concurrent access) storing the items in local
 2. LFU (least frequently used)
 3. LRU (least recently used)
 4. MRU (most recently used)
+5. ARC (adaptive/adjustable replacement cache)
