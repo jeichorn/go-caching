@@ -1,38 +1,44 @@
 package file
 
 import (
-	"github.com/landjur/go-caching"
+	"encoding/gob"
+	"github.com/landjur/go-caching/dependency"
 	"os"
 	"time"
 )
 
-// New returns a new instance of File.
-func New(filename string) *File {
+// register the type for gob encoding.
+func init() {
+	gob.Register(time.Time{})
+	gob.Register(&file{})
+}
+
+// New returns a new file caching dependency.
+func New(filePath string) dependency.Dependency {
 	var lastModifiedTime time.Time
-	fi, err := os.Stat(filename)
+	fi, err := os.Stat(filePath)
 	if err != nil {
 		lastModifiedTime = time.Now()
 	} else {
 		lastModifiedTime = fi.ModTime()
 	}
 
-	return &File{
-		Name:             filename,
-		lastModifiedTime: lastModifiedTime,
+	return &file{
+		Path:             filePath,
+		LastModifiedTime: lastModifiedTime,
 	}
 }
 
-// File represents a caching dependency policy by file.
-type File struct {
-	Name             string
-	lastModifiedTime time.Time
+type file struct {
+	Path             string
+	LastModifiedTime time.Time
 }
 
-func (this File) HasExpired(item *caching.Item) bool {
-	fi, err := os.Stat(this.Name)
+func (this file) HasChanged() bool {
+	fi, err := os.Stat(this.Path)
 	if err != nil {
 		return true
 	}
 
-	return fi.ModTime().After(this.lastModifiedTime)
+	return fi.ModTime().After(this.LastModifiedTime)
 }
