@@ -1,6 +1,6 @@
 #Go-Caching
 
-The go-caching packaging providers a scalable caching component for golang. 
+The go-caching package providers a scalable caching component for golang. 
 
 ##Container
 
