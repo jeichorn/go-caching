@@ -1,6 +1,6 @@
-package container
+package caching
 
-// Container represents the interface of a caching container.
+// Container represents a container.
 type Container interface {
 	// Get returns the value by given key.
 	Get(key string) (interface{}, error)

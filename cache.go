@@ -1,12 +1,7 @@
 package caching
 
-import (
-	"github.com/landjur/go-caching/container"
-	"github.com/landjur/go-caching/dependency"
-)
-
-// New returns a new cache.
-func New(container container.Container) *Cache {
+// NewCache returns a new instance of Cache.
+func NewCache(container Container) *Cache {
 	return &Cache{
 		container: container,
 	}
@@ -14,10 +9,10 @@ func New(container container.Container) *Cache {
 
 // Cache represents a cache.
 type Cache struct {
-	container container.Container
+	container Container
 }
 
-// Get returns the item by given key.
+// Get returns the value of caching item. it returns nil if caching item has expired.
 func (this *Cache) Get(key string) (interface{}, error) {
 	if this.container == nil {
 		return nil, nil
@@ -27,7 +22,7 @@ func (this *Cache) Get(key string) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	item := value.(*item)
+	item := value.(*Item)
 	if item.HasExpired() {
 		err = this.container.Remove(key)
 		return nil, err
@@ -36,16 +31,16 @@ func (this *Cache) Get(key string) (interface{}, error) {
 	return item.Value, nil
 }
 
-// Set sets(inserts/updates) item.
-func (this Cache) Set(key string, value interface{}, dependencies ...dependency.Dependency) error {
+// Set sets the caching item.
+func (this Cache) Set(key string, value interface{}, expiration *Expiration, dependencies ...Dependency) error {
 	if this.container == nil {
 		return nil
 	}
 
-	return this.container.Set(key, newItem(value, dependencies...))
+	return this.container.Set(key, NewItem(key, value, expiration, dependencies...))
 }
 
-// Remove removes the item by given key.
+// Remove removes the caching item.
 func (this Cache) Remove(key string) error {
 	if this.container == nil {
 		return nil
@@ -54,7 +49,7 @@ func (this Cache) Remove(key string) error {
 	return this.container.Remove(key)
 }
 
-// Clear removes all items.
+// Clear removes all caching items.
 func (this Cache) Clear() error {
 	return this.container.Clear()
 }

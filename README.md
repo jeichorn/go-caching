@@ -1,6 +1,6 @@
-#Golang Caching Package
+#Go-Caching
 
-The package providers a scalable caching component. 
+The go-caching packaging providers a scalable caching component for golang. 
 
 ##Container
 
@@ -28,7 +28,7 @@ The container represents an adapter for caching manager/service.
 
 ##Dependency
 
-The dependency represents an expiration policy.
+The dependency represents an external expiration policy.
 
 ###Available Dependencies
 
@@ -39,37 +39,34 @@ The dependency represents an expiration policy.
 ###Example: File Configuration Caching
 
         import (
-            "github.com/landjur/go-caching"
-            "github.com/landjur/go-caching/container/memory"
-            _ "github.com/landjur/go-caching/container/memory/arc"
-            _ "github.com/landjur/go-caching/dependency/file"
+            "github.com/wayn3h0/go-caching"
+            "github.com/wayn3h0/go-caching/container/memory"
+            _ "github.com/wayn3h0/go-caching/container/memory/arc"
+            "github.com/wayn3h0/go-caching/dependency/file"
         )
 
-        container := memory.ARC.New(1000)   // local memory container (ARC), capacity: 1000 (NOTE: not safe for concurrent access)
-        cache := caching.New(container)
-        cache.Set("key", "value")           // memory container always returns nil error
-        cache.Set("configuration-key", "settings", file.New(path)) // dependency by configuration file
+        container := memory.ARC.New(1000)                           // local memory container (ARC), capacity: 1000 (NOTE: not safe for concurrent access)
+        cache := caching.NewCache(container)
+        cache.Set("key", "value")                                   // memory container always returns nil error
+        cache.Set("configuration-key", "settings", file.New(path))  // dependency by configuration file
 
 ###Example: Multi-Level Caching 
 
         import (
-            "github.com/landjur/go-caching"
-            "github.com/landjur/go-caching/container/concurrent"
-            "github.com/landjur/go-caching/container/memcache"
-            "github.com/landjur/go-caching/container/memory"
-            _ "github.com/landjur/go-caching/container/memory/arc"
-            "github.com/landjur/go-caching/container/multilevel"
+            "github.com/wayn3h0/go-caching"
+            "github.com/wayn3h0/go-caching/container/concurrent"
+            "github.com/wayn3h0/go-caching/container/memcache"
+            "github.com/wayn3h0/go-caching/container/memory"
+            _ "github.com/wayn3h0/go-caching/container/memory/arc"
+            "github.com/wayn3h0/go-caching/container/multilevel"
         )
 
-        level1 := concurrent.New(memory.ARC.New(1000)) // local memory container (ARC), capacity: 1000, safe for concurrent access
+        level1 := concurrent.New(memory.ARC.New(1000))              // local memory container (ARC), capacity: 1000, safe for concurrent access
         level2 := memcache.New("192.168.100.101:11211")
-        container := multilevel.New(level1, level2) // local memory as level 1, memcached as level 2
-        cache := caching.New(container)
-        err := cache.Set("key", "value")    // memcached may return error
+        container := multilevel.New(level1, level2)                 // local memory as level 1, memcached as level 2
+        cache := caching.NewCache(container)
+        err := cache.Set("key", "value")                            // memcached may return error
         if err != nil {
             // handle error
         }
 
-##COPYRIGHT & LICENSE
-
-Copyright 2014 Landjur, Inc. Code released under the Apache License, Version 2.0.

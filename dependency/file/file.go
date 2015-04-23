@@ -2,19 +2,18 @@ package file
 
 import (
 	"encoding/gob"
-	"github.com/landjur/go-caching/dependency"
+	"github.com/wayn3h0/go-caching"
 	"os"
 	"time"
 )
 
 // register the type for gob encoding.
 func init() {
-	gob.Register(time.Time{})
-	gob.Register(&file{})
+	gob.Register(new(dependency))
 }
 
-// New returns a new file caching dependency.
-func New(filePath string) dependency.Dependency {
+// New returns a new instance of caching.Dependency.
+func New(filePath string) caching.Dependency {
 	var lastModifiedTime time.Time
 	fi, err := os.Stat(filePath)
 	if err != nil {
@@ -23,19 +22,19 @@ func New(filePath string) dependency.Dependency {
 		lastModifiedTime = fi.ModTime()
 	}
 
-	return &file{
-		Path:             filePath,
+	return &dependency{
+		FilePath:         filePath,
 		LastModifiedTime: lastModifiedTime,
 	}
 }
 
-type file struct {
-	Path             string
+type dependency struct {
+	FilePath         string
 	LastModifiedTime time.Time
 }
 
-func (this file) HasChanged() bool {
-	fi, err := os.Stat(this.Path)
+func (this dependency) HasChanged() bool {
+	fi, err := os.Stat(this.FilePath)
 	if err != nil {
 		return true
 	}

@@ -1,6 +1,6 @@
-#Memory Container
+#Memory
 
-The memory containers(not safe for concurrent access) storing the items in local memory (the fastest container), it's normal used for single machine or level 1 caching.
+The package providers memory containers(not safe for concurrent access) storing the items in local memory (the fastest container), it's normal used for single machine or level 1 caching.
 
 ##Replacement Algorithms
 
