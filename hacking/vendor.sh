@@ -43,7 +43,7 @@ cd $directory_vendor
 
 # Download packages
 echo "Downloading vendors..."
-clone git github.com/bradfitz/gomemcache   3d39f3a # release.r60
+clone git github.com/rainycape/memcache     756dcc4797 # v2: Jul 25, 2014
 echo "Done"
 
 cd $directory_origin
