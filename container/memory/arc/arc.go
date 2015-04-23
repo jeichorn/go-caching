@@ -1,13 +1,13 @@
 package arc
 
 import (
-	"github.com/landjur/go-caching/container"
-	"github.com/landjur/go-caching/container/memory"
+	"github.com/wayn3h0/go-caching"
+	"github.com/wayn3h0/go-caching/container/memory"
 )
 
-// New returns a new in-memory caching container using arc (adaptive/adjustable replacement cache) arithmetic.
-func New(capacity int) container.Container {
-	return &arc{
+// New returns a new instance of caching.Container: in-memory caching container using arc (adaptive/adjustable replacement cache) arithmetic.
+func New(capacity int) caching.Container {
+	return &container{
 		capacity: capacity,
 		t1:       newItems(),
 		t2:       newItems(),
@@ -37,7 +37,7 @@ func max(x, y int) int {
 	return y
 }
 
-type arc struct {
+type container struct {
 	capacity int
 	p        int // target size of t1
 	t1       *items
@@ -46,7 +46,7 @@ type arc struct {
 	b2       *items
 }
 
-func (this *arc) replace() {
+func (this *container) replace() {
 	if this.t1.Count() >= max(1, this.p) { // t1's size exceeds target (t1 is too big)
 		this.b1.Set(this.t1.Discard()) // grab from t1 and put to b1
 	} else {
@@ -54,7 +54,7 @@ func (this *arc) replace() {
 	}
 }
 
-func (this *arc) Get(key string) (interface{}, error) {
+func (this *container) Get(key string) (interface{}, error) {
 	if this.t1 == nil {
 		return nil, nil
 	}
@@ -88,7 +88,7 @@ func (this *arc) Get(key string) (interface{}, error) {
 	return nil, nil
 }
 
-func (this *arc) Set(key string, value interface{}) error {
+func (this *container) Set(key string, value interface{}) error {
 	if this.t1 == nil {
 		this.t1 = newItems()
 		this.t2 = newItems()
@@ -126,7 +126,7 @@ func (this *arc) Set(key string, value interface{}) error {
 	return nil
 }
 
-func (this *arc) Remove(key string) error {
+func (this *container) Remove(key string) error {
 	this.t1.Remove(key)
 	this.t2.Remove(key)
 	this.b1.Remove(key)
@@ -135,7 +135,7 @@ func (this *arc) Remove(key string) error {
 	return nil
 }
 
-func (this *arc) Clear() error {
+func (this *container) Clear() error {
 	if this.t1 == nil {
 		return nil
 	}

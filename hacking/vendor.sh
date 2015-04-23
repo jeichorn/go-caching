@@ -48,7 +48,10 @@ echo "Done"
 
 cd $directory_origin
 
-# Export GOPATH
-echo -n "Setting GOPATH for vendors... "
-export GOPATH=$directory_vendor:$GOPATH
+# Tip for setup GOPATH
+echo ""
+echo "You need run following code to setup GOPATH for vendors: "
+echo ""
+echo "export GOPATH=$directory_vendor:\$GOPATH"
+echo ""
 echo "Done"

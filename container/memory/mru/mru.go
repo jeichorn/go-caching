@@ -1,14 +1,13 @@
 package mru
 
 import (
-	"github.com/landjur/go-caching/container"
-	"github.com/landjur/go-caching/container/memory"
+	"github.com/wayn3h0/go-caching"
+	"github.com/wayn3h0/go-caching/container/memory"
 )
 
-// New returns a new in-memory caching items using mru (most recently used) arithmetic.
-// It is not safe for concurrent access.
-func New(capacity int) container.Container {
-	return &mru{
+// New returns a new instance of caching.Container: in-memory caching container using mru (most recently used) arithmetic.
+func New(capacity int) caching.Container {
+	return &container{
 		capacity: capacity,
 		items:    newItems(),
 	}
@@ -19,12 +18,12 @@ func init() {
 	memory.MRU.Register(New)
 }
 
-type mru struct {
+type container struct {
 	capacity int
 	items    *items
 }
 
-func (this *mru) Get(key string) (interface{}, error) {
+func (this *container) Get(key string) (interface{}, error) {
 	if this.items == nil {
 		return nil, nil
 	}
@@ -32,7 +31,7 @@ func (this *mru) Get(key string) (interface{}, error) {
 	return this.items.Get(key), nil
 }
 
-func (this *mru) Set(key string, value interface{}) error {
+func (this *container) Set(key string, value interface{}) error {
 	if this.items == nil {
 		this.items = newItems()
 	}
@@ -46,7 +45,7 @@ func (this *mru) Set(key string, value interface{}) error {
 	return nil
 }
 
-func (this *mru) Remove(key string) error {
+func (this *container) Remove(key string) error {
 	if this.items == nil {
 		return nil
 	}
@@ -56,7 +55,7 @@ func (this *mru) Remove(key string) error {
 	return nil
 }
 
-func (this *mru) Clear() error {
+func (this *container) Clear() error {
 	if this.items == nil {
 		return nil
 	}

@@ -1,22 +1,22 @@
 package multilevel
 
 import (
-	"github.com/landjur/go-caching/container"
+	"github.com/wayn3h0/go-caching"
 )
 
-// New returns a new multilevel caching container.
-func New(containers ...container.Container) container.Container {
-	return &multilevel{
-		containers: containers,
+// New returns a new instance of caching.Container: container caching container wrapper for container caching.
+func New(containers ...caching.Container) caching.Container {
+	return &container{
+		list: containers,
 	}
 }
 
-type multilevel struct {
-	containers []container.Container
+type container struct {
+	list []caching.Container
 }
 
-func (this multilevel) Get(key string) (interface{}, error) {
-	for _, v := range this.containers {
+func (this container) Get(key string) (interface{}, error) {
+	for _, v := range this.list {
 		value, err := v.Get(key)
 		if err != nil {
 			return nil, err
@@ -30,8 +30,8 @@ func (this multilevel) Get(key string) (interface{}, error) {
 	return nil, nil
 }
 
-func (this multilevel) Set(key string, value interface{}) error {
-	for _, v := range this.containers {
+func (this container) Set(key string, value interface{}) error {
+	for _, v := range this.list {
 		err := v.Set(key, value)
 		if err != nil {
 			return err
@@ -41,8 +41,8 @@ func (this multilevel) Set(key string, value interface{}) error {
 	return nil
 }
 
-func (this multilevel) Remove(key string) error {
-	for _, v := range this.containers {
+func (this container) Remove(key string) error {
+	for _, v := range this.list {
 		err := v.Remove(key)
 		if err != nil {
 			return err
@@ -52,8 +52,8 @@ func (this multilevel) Remove(key string) error {
 	return nil
 }
 
-func (this multilevel) Clear() error {
-	for _, v := range this.containers {
+func (this container) Clear() error {
+	for _, v := range this.list {
 		err := v.Clear()
 		if err != nil {
 			return err

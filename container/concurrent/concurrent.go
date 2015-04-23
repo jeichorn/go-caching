@@ -1,44 +1,44 @@
 package concurrent
 
 import (
-	"github.com/landjur/go-caching/container"
+	"github.com/wayn3h0/go-caching"
 	"sync"
 )
 
-// New returns a safe container for concurrent access.
-func New(real container.Container) container.Container {
-	return &concurrent{
+// New returns a new instance of caching.Container: safe container wrapper for container access.
+func New(real caching.Container) caching.Container {
+	return &container{
 		real: real,
 	}
 }
 
-type concurrent struct {
+type container struct {
 	locker sync.RWMutex
-	real   container.Container
+	real   caching.Container
 }
 
-func (this *concurrent) Get(key string) (interface{}, error) {
+func (this *container) Get(key string) (interface{}, error) {
 	this.locker.RLock()
 	defer this.locker.RUnlock()
 
 	return this.real.Get(key)
 }
 
-func (this *concurrent) Set(key string, value interface{}) error {
+func (this *container) Set(key string, value interface{}) error {
 	this.locker.Lock()
 	defer this.locker.Unlock()
 
 	return this.real.Set(key, value)
 }
 
-func (this *concurrent) Remove(key string) error {
+func (this *container) Remove(key string) error {
 	this.locker.Lock()
 	defer this.locker.Unlock()
 
 	return this.real.Remove(key)
 }
 
-func (this *concurrent) Clear() error {
+func (this *container) Clear() error {
 	this.locker.Lock()
 	defer this.locker.Unlock()
 

@@ -3,15 +3,20 @@ package memcache
 import (
 	"bytes"
 	"encoding/gob"
-	mc "github.com/bradfitz/gomemcache/memcache"
-	"github.com/landjur/go-caching/container"
+	mc "github.com/rainycape/memcache"
+	"github.com/wayn3h0/go-caching"
 )
 
-// New returns a new memcached caching container.
-func New(servers ...string) container.Container {
-	return &memcache{
-		client: mc.New(servers...),
+// New returns a new instance of caching.Container: memcached caching container.
+func New(servers ...string) (caching.Container, error) {
+	client, err := mc.New(servers...)
+	if err != nil {
+		return nil, err
 	}
+
+	return &container{
+		Client: client,
+	}, nil
 }
 
 // item represents a caching item.
@@ -43,12 +48,12 @@ func decode(data []byte) (*item, error) {
 	return &item, nil
 }
 
-type memcache struct {
-	client *mc.Client
+type container struct {
+	Client *mc.Client
 }
 
-func (this memcache) Get(key string) (interface{}, error) {
-	mci, err := this.client.Get(key)
+func (this container) Get(key string) (interface{}, error) {
+	mci, err := this.Client.Get(key)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +66,7 @@ func (this memcache) Get(key string) (interface{}, error) {
 	return item.Value, nil
 }
 
-func (this memcache) Set(key string, value interface{}) error {
+func (this container) Set(key string, value interface{}) error {
 	data, err := encode(&item{value})
 	if err != nil {
 		return err
@@ -72,11 +77,11 @@ func (this memcache) Set(key string, value interface{}) error {
 		Value: data,
 	}
 
-	return this.client.Set(mci)
+	return this.Client.Set(mci)
 }
 
-func (this memcache) Remove(key string) error {
-	err := this.client.Delete(key)
+func (this container) Remove(key string) error {
+	err := this.Client.Delete(key)
 	if err != mc.ErrCacheMiss {
 		return err
 	}
@@ -84,6 +89,6 @@ func (this memcache) Remove(key string) error {
 	return nil
 }
 
-func (this memcache) Clear() error {
-	return this.client.DeleteAll()
+func (this container) Clear() error {
+	return this.Client.Flush(0)
 }

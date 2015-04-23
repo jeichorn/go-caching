@@ -1,3 +1,3 @@
-#Hacking Go-Caching Package
+#Hacking
 
 This directory holds information and tools for everyone involved in the process of contributing Go-Caching Package.

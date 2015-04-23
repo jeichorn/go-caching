@@ -1,13 +1,13 @@
 package lfu
 
 import (
-	"github.com/landjur/go-caching/container"
-	"github.com/landjur/go-caching/container/memory"
+	"github.com/wayn3h0/go-caching"
+	"github.com/wayn3h0/go-caching/container/memory"
 )
 
-// New returns a new in-memory caching items using lfu (least frequently used) arithmetic.
-func New(capacity int) container.Container {
-	return &lfu{
+// New returns a new instance of caching.Container: in-memory caching container using lfu (least frequently used) arithmetic.
+func New(capacity int) caching.Container {
+	return &container{
 		capacity: capacity,
 		items:    newItems(),
 	}
@@ -18,12 +18,12 @@ func init() {
 	memory.LFU.Register(New)
 }
 
-type lfu struct {
+type container struct {
 	capacity int
 	items    *items
 }
 
-func (this *lfu) Get(key string) (interface{}, error) {
+func (this *container) Get(key string) (interface{}, error) {
 	if this.items == nil {
 		return nil, nil
 	}
@@ -31,7 +31,7 @@ func (this *lfu) Get(key string) (interface{}, error) {
 	return this.items.Get(key), nil
 }
 
-func (this *lfu) Set(key string, value interface{}) error {
+func (this *container) Set(key string, value interface{}) error {
 	if this.items == nil {
 		this.items = newItems()
 	}
@@ -45,7 +45,7 @@ func (this *lfu) Set(key string, value interface{}) error {
 	return nil
 }
 
-func (this *lfu) Remove(key string) error {
+func (this *container) Remove(key string) error {
 	if this.items == nil {
 		return nil
 	}
@@ -55,7 +55,7 @@ func (this *lfu) Remove(key string) error {
 	return nil
 }
 
-func (this *lfu) Clear() error {
+func (this *container) Clear() error {
 	if this.items == nil {
 		return nil
 	}
