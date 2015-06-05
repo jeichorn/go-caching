@@ -33,7 +33,7 @@ type Item struct {
 // HasExpired reports whether the item has expired.
 func (this Item) HasExpired() bool {
 	if this.Expiration != nil {
-		if this.Expiration.AbsoluteTime.Before(time.Now()) || this.LastAccessedTime.Add(this.Expiration.SlidingPeriod).Before(time.Now()) {
+		if this.Expiration.AbsoluteTime.Before(time.Now()) || (this.LastAccessedTime.Unix() > 0 && this.LastAccessedTime.Add(this.Expiration.SlidingPeriod).Before(time.Now())) {
 			return true
 		}
 	}
