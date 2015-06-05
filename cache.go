@@ -22,6 +22,10 @@ func (this *Cache) Get(key string) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+    if value == nil {
+        return nil, nil
+    }
+
 	item := value.(*Item)
 	if item.HasExpired() {
 		err = this.container.Remove(key)
