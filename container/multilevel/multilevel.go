@@ -1,7 +1,7 @@
 package multilevel
 
 import (
-	"github.com/wayn3h0/go-caching"
+	"github.com/jeichorn/go-caching"
 )
 
 // New returns a new instance of caching.Container: container caching container wrapper for container caching.

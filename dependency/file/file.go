@@ -2,7 +2,7 @@ package file
 
 import (
 	"encoding/gob"
-	"github.com/wayn3h0/go-caching"
+	"github.com/jeichorn/go-caching"
 	"os"
 	"time"
 )

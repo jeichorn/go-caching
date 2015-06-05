@@ -1,8 +1,8 @@
 package fifo
 
 import (
-	"github.com/wayn3h0/go-caching"
-	"github.com/wayn3h0/go-caching/container/memory"
+	"github.com/jeichorn/go-caching"
+	"github.com/jeichorn/go-caching/container/memory"
 )
 
 // New returns a new instance of caching.Container: in-memory caching container using fifo (first in first out) arithmetic.

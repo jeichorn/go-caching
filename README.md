@@ -39,10 +39,10 @@ The dependency represents an external expiration policy.
 ###Example: File Configuration Caching
 
         import (
-            "github.com/wayn3h0/go-caching"
-            "github.com/wayn3h0/go-caching/container/memory"
-            _ "github.com/wayn3h0/go-caching/container/memory/arc"
-            "github.com/wayn3h0/go-caching/dependency/file"
+            "github.com/jeichorn/go-caching"
+            "github.com/jeichorn/go-caching/container/memory"
+            _ "github.com/jeichorn/go-caching/container/memory/arc"
+            "github.com/jeichorn/go-caching/dependency/file"
         )
 
         container := memory.ARC.New(1000)                           // local memory container (ARC), capacity: 1000 (NOTE: not safe for concurrent access)
@@ -53,12 +53,12 @@ The dependency represents an external expiration policy.
 ###Example: Multi-Level Caching 
 
         import (
-            "github.com/wayn3h0/go-caching"
-            "github.com/wayn3h0/go-caching/container/concurrent"
-            "github.com/wayn3h0/go-caching/container/memcache"
-            "github.com/wayn3h0/go-caching/container/memory"
-            _ "github.com/wayn3h0/go-caching/container/memory/arc"
-            "github.com/wayn3h0/go-caching/container/multilevel"
+            "github.com/jeichorn/go-caching"
+            "github.com/jeichorn/go-caching/container/concurrent"
+            "github.com/jeichorn/go-caching/container/memcache"
+            "github.com/jeichorn/go-caching/container/memory"
+            _ "github.com/jeichorn/go-caching/container/memory/arc"
+            "github.com/jeichorn/go-caching/container/multilevel"
         )
 
         level1 := concurrent.New(memory.ARC.New(1000))              // local memory container (ARC), capacity: 1000, safe for concurrent access

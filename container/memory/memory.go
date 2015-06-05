@@ -1,7 +1,7 @@
 package memory
 
 import (
-	"github.com/wayn3h0/go-caching"
+	"github.com/jeichorn/go-caching"
 )
 
 const (
@@ -12,11 +12,11 @@ const (
 type Implementation byte
 
 const (
-	FIFO Implementation = iota + 1 // imports github.com/wayn3h0/go-caching/container/memory/fifo
-	LFU                            // imports github.com/wayn3h0/go-caching/container/memory/lfu
-	LRU                            // imports github.com/wayn3h0/go-caching/container/memory/lru
-	MRU                            // imports github.com/wayn3h0/go-caching/container/memory/mru
-	ARC                            // imports github.com/wayn3h0/go-caching/container/memory/arc
+	FIFO Implementation = iota + 1 // imports github.com/jeichorn/go-caching/container/memory/fifo
+	LFU                            // imports github.com/jeichorn/go-caching/container/memory/lfu
+	LRU                            // imports github.com/jeichorn/go-caching/container/memory/lru
+	MRU                            // imports github.com/jeichorn/go-caching/container/memory/mru
+	ARC                            // imports github.com/jeichorn/go-caching/container/memory/arc
 	maxImplementation
 )
 

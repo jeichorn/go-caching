@@ -1,7 +1,7 @@
 package concurrent
 
 import (
-	"github.com/wayn3h0/go-caching"
+	"github.com/jeichorn/go-caching"
 	"sync"
 )
 

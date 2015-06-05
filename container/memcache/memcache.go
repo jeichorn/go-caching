@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	mc "github.com/rainycape/memcache"
-	"github.com/wayn3h0/go-caching"
+	"github.com/jeichorn/go-caching"
 )
 
 // New returns a new instance of caching.Container: memcached caching container.
